@@ -11,7 +11,6 @@ public class Controller extends JPanel {
         super(new BorderLayout());
         JButton x = new JButton("Controller");
         this.add(x, BorderLayout.CENTER);
-        
 	}
 	
 }

@@ -8,6 +8,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import utils.Login;
@@ -16,16 +17,16 @@ import utils.User;
 public class Main implements Observer{
 	static JFrame f;
 	static boolean loggedIn = false;
-	static Login current;
+	static Login loginPage;
 	
 	public static void main(String[] args) {
 		Main index = new Main();
         f = new JFrame();
         f.setLayout(new BorderLayout());
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        current = new Login();
-        current.addObserver(index);
-       	f.add(current, BorderLayout.CENTER);
+        loginPage = new Login();
+        loginPage.addObserver(index);
+       	f.add(loginPage, BorderLayout.CENTER);
         f.pack();
         f.setLocationRelativeTo(null);
         f.setVisible(true);
@@ -34,6 +35,13 @@ public class Main implements Observer{
 	@Override
 	public void update(Observable o, Object arg) {
 		User temp = (User) arg;
-		System.out.println(arg);
+		JLabel text = new JLabel();
+		text.setText("Welcome, " + temp.name + ". You currently have $" + temp.getMoney() + " left.");
+		f.remove(loginPage);
+		f.add(text, BorderLayout.NORTH);
+		f.add(new Controller(), BorderLayout.CENTER);
+		f.pack();
+		f.repaint();
+		f.revalidate();
 	}
 }
