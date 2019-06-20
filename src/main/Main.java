@@ -11,36 +11,29 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import utils.Login;
+import utils.User;
 
-public class Main {
+public class Main implements Observer{
 	static JFrame f;
 	static boolean loggedIn = false;
-	static JPanel current;
-	
+	static Login current;
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Main index = new Main();
         f = new JFrame();
         f.setLayout(new BorderLayout());
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       	current = new Login(index.new ButtonHandler());
-        //current = new Login();
+        current = new Login();
+        current.addObserver(index);
        	f.add(current, BorderLayout.CENTER);
         f.pack();
         f.setLocationRelativeTo(null);
         f.setVisible(true);
 	}
-	
-	private class ButtonHandler implements ActionListener {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            f.remove(current);
-            f.add(new Controller(), BorderLayout.CENTER);
-            f.repaint();
-            f.revalidate();
-        }
-    }
-
+	@Override
+	public void update(Observable o, Object arg) {
+		User temp = (User) arg;
+		System.out.println(arg);
+	}
 }
