@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -14,7 +16,7 @@ import javax.swing.JPanel;
 import utils.Login;
 import utils.User;
 
-public class Main implements Observer{
+public class Main implements PropertyChangeListener {
 	static JFrame window;
 	static boolean loggedIn = false;
 	static Login loginPage;
@@ -25,7 +27,7 @@ public class Main implements Observer{
         window.setLayout(new BorderLayout());
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginPage = new Login();
-        loginPage.addObserver(index);
+        loginPage.addPropertyChangeListener(index);
        	window.add(loginPage, BorderLayout.CENTER);
        	window.setExtendedState(window.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         window.setLocationRelativeTo(null);
@@ -33,10 +35,10 @@ public class Main implements Observer{
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
-		User temp = (User) arg;
+	public void propertyChange(PropertyChangeEvent evt) {
+		loggedIn = true;
 		window.remove(loginPage);
-		window.add(new Controller(temp), BorderLayout.CENTER);
+		window.add(new Controller((User) evt.getNewValue()), BorderLayout.CENTER);
 		window.repaint();
 		window.revalidate();
 	}

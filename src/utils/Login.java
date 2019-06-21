@@ -9,7 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -22,41 +23,32 @@ import javax.swing.JTextField;
 
 import main.Controller;
 
-class Notifier extends Observable {
-	
-	@Override
-	public void notifyObservers(Object arg) {
-		super.setChanged();
-		super.notifyObservers(arg);
-	}
-}
-
 public class Login extends JPanel {
-	private Notifier notifier;
+	private PropertyChangeSupport support;
+	
 	JLabel userLabel, pwLabel;
 	JTextField userArea, pwArea;
 	JButton loginButton;
 	
-	public void addObserver(Observer o) {
-		notifier.addObserver(o);
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+		this.support.addPropertyChangeListener(pcl);
 	}
 	
 	private class ButtonHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
         	User user = new User(userArea.getText(), pwArea.getText());
-        	notifier.notifyObservers(user);
+        	support.firePropertyChange("user", 0, user);
         }
     }
 	
 	public Login() {
 		setLayout(new GridBagLayout());
+		support = new PropertyChangeSupport(this);
 		
 		GridBagConstraints config = new GridBagConstraints();
 		config.anchor = GridBagConstraints.CENTER;
 		config.gridwidth = GridBagConstraints.REMAINDER;
-		
-        notifier = new Notifier();
         
         userLabel = new JLabel();
         userLabel.setText("Username : ");
