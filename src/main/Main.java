@@ -27,7 +27,7 @@ public class Main implements Observer{
         loginPage = new Login();
         loginPage.addObserver(index);
        	f.add(loginPage, BorderLayout.CENTER);
-        f.pack();
+       	f.setExtendedState(f.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         f.setLocationRelativeTo(null);
         f.setVisible(true);
 	}
@@ -40,7 +40,6 @@ public class Main implements Observer{
 		f.remove(loginPage);
 		f.add(text, BorderLayout.NORTH);
 		f.add(new Controller(), BorderLayout.CENTER);
-		f.pack();
 		f.repaint();
 		f.revalidate();
 	}

@@ -1,6 +1,11 @@
 package utils;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,7 +50,12 @@ public class Login extends JPanel {
     }
 	
 	public Login() {
-        super(new BorderLayout());
+		setLayout(new GridBagLayout());
+		
+		GridBagConstraints config = new GridBagConstraints();
+		config.anchor = GridBagConstraints.CENTER;
+		config.gridwidth = GridBagConstraints.REMAINDER;
+		
         notifier = new Notifier();
         
         userLabel = new JLabel();
@@ -63,7 +74,7 @@ public class Login extends JPanel {
         
         loginButton = new JButton("Log In");
         loginButton.addActionListener(new ButtonHandler());
-        this.add(fields, BorderLayout.CENTER);
-        this.add(loginButton, BorderLayout.SOUTH);
+        this.add(fields, config);
+        this.add(loginButton, config);
 	}
 }
