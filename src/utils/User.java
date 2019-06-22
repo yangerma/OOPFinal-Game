@@ -25,7 +25,14 @@ public class User {
     }
 
     public void addMoney(int moneyDiff) {
+        //if (moneyDiff < 0)
+        //    throw new RuntimeException("System Error.");
         setMoney(this.money + moneyDiff);
+    }
+    public void subMoney(int moneyDiff) {
+        if (!(moneyDiff > 0))
+            throw new RuntimeException("This number should be positive");
+        setMoney(this.money - moneyDiff);
     }
 
     public int getMoney() {
