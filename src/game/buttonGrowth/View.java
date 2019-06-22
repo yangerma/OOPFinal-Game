@@ -15,8 +15,11 @@ public class View extends game.View {
 	JButton game2Button;
 	JButton game3Button;
 	GridBagConstraints config = new GridBagConstraints();
+	Model model;
+
 	public View(Model model) {
 		super(model);
+		this.model = model;
 		setLayout(new GridBagLayout());
 		config.anchor = GridBagConstraints.CENTER;
 		config.gridwidth = GridBagConstraints.REMAINDER;

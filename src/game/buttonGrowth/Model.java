@@ -1,5 +1,9 @@
 package game.buttonGrowth;
 
-public class Model extends game.Model {
+import utils.User;
 
+public class Model extends game.Model {
+    Model(User user) {
+        super(user);
+    }
 }
