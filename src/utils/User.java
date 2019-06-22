@@ -15,6 +15,7 @@ public class User {
 
     public User(String name, String pw) {
         money = 0;
+        money = 1000; // XXX for testing
         this.name = new String(name);
         this.pw = new String(pw);
     }
@@ -23,16 +24,24 @@ public class User {
         return new String(name);
     }
 
+    public void addMoney(int moneyDiff) {
+        setMoney(this.money + moneyDiff);
+    }
+
     public int getMoney() {
         return money;
     }
 
     public void setMoney(int money) {
+        if (money < 0)
+            throw new NegativeMoneyException();
         this.money = money;
-        pcs.firePropertyChange("money", -1, money);
+        pcs.firePropertyChange("money", null, money);
     }
-
-    public void addMoney(int moneyDiff) {
-        this.money += moneyDiff;
+    
+    class NegativeMoneyException extends RuntimeException {
+        NegativeMoneyException() {
+            super("You don't have enough money.");
+        }
     }
 }
