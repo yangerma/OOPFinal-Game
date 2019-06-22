@@ -16,12 +16,9 @@ import game.*;
 
 public class Controller extends JPanel {
 	private static JPanel menu;
-	//JPanel currentPanel;
-	//Model currentModel;
-	
+	private gameFinder gameFinder;
 	
 	private class Buttons extends JPanel {
-		JButton game1Button;
 		
 		GridBagConstraints config = new GridBagConstraints();
 		
@@ -31,20 +28,19 @@ public class Controller extends JPanel {
 			config.anchor = GridBagConstraints.CENTER;
 			config.gridwidth = GridBagConstraints.REMAINDER;
 			
-	        game1Button = new JButton("Game 1");
-	        game1Button.addActionListener(new ChoosingHandler1());
-
-	        this.add(game1Button, config);
-
+			for (String name : gameFinder.gameNames()) {
+			    JButton gameButton = new JButton(name);
+			    gameButton.addActionListener(new ChoosingHandler());
+			    this.add(gameButton, config);
+			}
 		}
 	}
 	
-	private class ChoosingHandler1 implements ActionListener {
+	private class ChoosingHandler implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			Controller.this.removeAll();
-			Model model = new game.buttonGrowth.Model();
-			View view  = new game.buttonGrowth.View((game.buttonGrowth.Model)model);
+			View view  = gameFinder.findGame(evt.getActionCommand());
 			Controller.this.add(view, BorderLayout.CENTER);
 			JButton exitButton = new JButton("Exit Game");
 			exitButton.addActionListener(new ExitHandler());
@@ -58,7 +54,6 @@ public class Controller extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			Controller.this.removeAll();
-			//currentPanel = menu;
 			Controller.this.add(menu, BorderLayout.CENTER);
 			Controller.this.repaint();
 			Controller.this.revalidate();
@@ -66,6 +61,7 @@ public class Controller extends JPanel {
 	}
 	
 	Controller(User user) {
+	    gameFinder = new gameFinder(user);
 		setLayout(new BorderLayout());
 		menu = new Buttons();
 		this.add(menu, BorderLayout.CENTER);

@@ -3,7 +3,7 @@ package game.buttonGrowth;
 import utils.User;
 
 public class Model extends game.Model {
-    Model(User user) {
+    public Model(User user) {
         super(user);
     }
 }
