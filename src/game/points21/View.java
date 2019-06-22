@@ -1,5 +1,12 @@
 package game.points21;
 
-public class View implements game.View {
+import java.beans.PropertyChangeEvent;
 
+public class View extends game.View {
+	View(Model model) {
+		super(model);
+	}
+	public void propertyChange(PropertyChangeEvent evt) {
+		
+	}
 }
