@@ -75,16 +75,25 @@ public class View extends game.View{
 	// Handler when user presses "Roll!"
 	private class RolledHandler implements ActionListener {
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			dicePanel.setDieOne(4);
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				model.rollDice();
+			} catch (RuntimeException e) {
+				showMessage(e.getMessage());
+			}
 		}
 	}
 	
 	// Handler when user places bet
 	private class BetPlacedHandler implements ActionListener {
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			model.startGame(betArea.getText());
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				setBet.setEnabled(false);
+				model.startGame(betArea.getText());
+			} catch (RuntimeException e) {
+				showMessage(e.getMessage());
+			}
 		}
 	}
 	
@@ -97,6 +106,7 @@ public class View extends game.View{
 		dicePanel = new DicePanel();
 		rollDice = new JButton("Roll!");
 		rollDice.addActionListener(new RolledHandler());
+		rollDice.setEnabled(false);
 		intFormat = NumberFormat.getIntegerInstance();
 		intFormat.setGroupingUsed(false);
 		betArea = new JFormattedTextField(intFormat);
@@ -126,5 +136,13 @@ public class View extends game.View{
 		else if(changed == "dieOne") dicePanel.setDieOne((int) evt.getNewValue());
 		else if(changed == "dieTwo") dicePanel.setDieTwo((int) evt.getNewValue());
 		else if(changed == "dieThree") dicePanel.setDieThree((int) evt.getNewValue());
+		else if((Boolean) evt.getNewValue() == true){
+			messages.append("Your turn.\n");
+			rollDice.setEnabled(true);
+		}
+		else {
+			rollDice.setEnabled(false);
+			setBet.setEnabled(true);
+		}
 	}
 }
