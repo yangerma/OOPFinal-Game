@@ -1,27 +1,40 @@
 package game.shibala;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.text.NumberFormat;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import game.shibala.Model;
 
 public class View extends game.View{
-	JButton rollDice;
+	JButton rollDice, setBet;
+	JTextArea messages;
+	NumberFormat intFormat;
+	JFormattedTextField betArea;
 	DicePanel dicePanel;
 	Model model;
 	GridBagConstraints config = new GridBagConstraints();
 	
-	private class DicePanel extends JPanel{
+	// The panel that shows the three dice
+	private class DicePanel extends JPanel {
 		ImageIcon[] allDice = new ImageIcon[7];
 		JLabel dieOne, dieTwo, dieThree;
 		
@@ -44,15 +57,34 @@ public class View extends game.View{
 		
 		public void setDieOne(int which) {
 			dieOne.setIcon(allDice[which]);
+			this.repaint();
+			this.revalidate();
+		}
+		public void setDieTwo(int which) {
+			dieTwo.setIcon(allDice[which]);
+			this.repaint();
+			this.revalidate();
+		}
+		public void setDieThree(int which) {
+			dieThree.setIcon(allDice[which]);
+			this.repaint();
+			this.revalidate();
 		}
 	}
 	
-	public class RolledHandler implements ActionListener {
+	// Handler when user presses "Roll!"
+	private class RolledHandler implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			dicePanel.setDieOne(3);
-			dicePanel.repaint();
-			dicePanel.revalidate();
+			dicePanel.setDieOne(4);
+		}
+	}
+	
+	// Handler when user places bet
+	private class BetPlacedHandler implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			model.startGame(betArea.getText());
 		}
 	}
 	
@@ -61,15 +93,38 @@ public class View extends game.View{
 		this.model = model;
 		setLayout(new GridBagLayout());
 		
+		// Setting up the UI
 		dicePanel = new DicePanel();
 		rollDice = new JButton("Roll!");
 		rollDice.addActionListener(new RolledHandler());
+		intFormat = NumberFormat.getIntegerInstance();
+		intFormat.setGroupingUsed(false);
+		betArea = new JFormattedTextField(intFormat);
+		setBet = new JButton("Place Bet");
+		setBet.addActionListener(new BetPlacedHandler());
+		messages = new JTextArea("Welcome to Shibala!\n");
+		messages.setEditable(false);
+		messages.setPreferredSize(new Dimension(1000, 300));
+		JScrollPane scrollPane = new JScrollPane();
 		
 		add(dicePanel, config);
 		add(rollDice, config);
+		JPanel betPanel = new JPanel(new GridLayout(1, 3));
+		betPanel.add(new JLabel("Place your bet here : "));
+		betPanel.add(betArea);
+		betPanel.add(setBet);
+		add(betPanel, config);
+		add(scrollPane);
+		scrollPane.setViewportView(messages);
 	}
 	
 	public void propertyChange(PropertyChangeEvent evt) {
-		
+		String changed = evt.getPropertyName();
+		if(changed == "err") showMessage((String) evt.getNewValue());
+		else if(changed == "init") messages.setText((String) evt.getNewValue());
+		else if(changed == "msg") messages.append((String) evt.getNewValue());
+		else if(changed == "dieOne") dicePanel.setDieOne((int) evt.getNewValue());
+		else if(changed == "dieTwo") dicePanel.setDieTwo((int) evt.getNewValue());
+		else if(changed == "dieThree") dicePanel.setDieThree((int) evt.getNewValue());
 	}
 }
