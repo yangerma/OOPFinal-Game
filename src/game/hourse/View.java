@@ -81,6 +81,7 @@ public class View extends game.View implements ActionListener,ChangeListener{
 		add(hourseFour, config);
 		add(info, config);
 		add(winner, config);
+		start.addActionListener(this);
 	}
 	
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -122,12 +123,13 @@ public class View extends game.View implements ActionListener,ChangeListener{
 					throw new RuntimeException();
 				}
 				else {
+					//model.setMoney(model.getMoney()-wrap(inputMoney.getValue()));
 					start.setVisible(false);
 					moneyLabel.setVisible(false);
 					guessLabel.setVisible(false);
 					inputMoney.setVisible(false);
 					guessHorse.setVisible(false);
-					model.setMoney(model.getMoney()-wrap(inputMoney.getValue()));
+					
 					info.setText("");
 					winner.setText("");
 					hourseOne.setValue(0);

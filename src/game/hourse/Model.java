@@ -15,12 +15,19 @@ public class Model extends game.Model {
 		user.setMoney(money);
 	}
 	public void check(int horse, int guess, int money, JLabel label) {
-		if (horse == guess) {
-			setMoney(getMoney()+money*10);
-			label.setText("Horse "+Integer.valueOf(horse).toString()+" wins! You get $"+Integer.valueOf(money*10).toString());
+		try {
+			if (horse == guess) {
+				setMoney(getMoney()+money*5);
+				label.setText("Horse "+Integer.valueOf(horse).toString()+" wins! You get $"+Integer.valueOf(money*5).toString());
+			}
+			else {
+				setMoney(getMoney()-money*2);
+				label.setText("Horse "+Integer.valueOf(horse).toString()+" wins! You lose your money");
+			}
+		}catch(Exception err) {
+			label.setText("You lose!! You don't have enogh money!!");
+			setMoney(0);
 		}
-		else {
-			label.setText("Horse "+Integer.valueOf(horse).toString()+" wins! You lose your money");
-		}
+		
 	}
 }
