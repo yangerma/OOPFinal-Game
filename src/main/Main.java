@@ -1,20 +1,14 @@
 package main;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import utils.Login;
 import utils.User;
+import utils.UserView;
 
 public class Main implements PropertyChangeListener {
 	static JFrame window;
@@ -38,7 +32,9 @@ public class Main implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent evt) {
 		loggedIn = true;
 		window.remove(loginPage);
-		window.add(new Controller((User) evt.getNewValue()), BorderLayout.CENTER);
+		User user = (User)evt.getNewValue();
+		window.add(new UserView(user), BorderLayout.NORTH);
+		window.add(new Controller(user), BorderLayout.CENTER);
 		window.repaint();
 		window.revalidate();
 	}
