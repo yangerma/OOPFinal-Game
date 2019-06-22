@@ -31,4 +31,8 @@ public class User {
         this.money = money;
         pcs.firePropertyChange("money", -1, money);
     }
+
+    public void addMoney(int moneyDiff) {
+        this.money += moneyDiff;
+    }
 }
