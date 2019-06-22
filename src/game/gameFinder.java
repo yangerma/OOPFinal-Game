@@ -12,6 +12,7 @@ public class gameFinder {
         
         // Button Growth Game
         nameList.add("Button Growth Game");
+        nameList.add("Shi Ba La");
     }
     
     public List<String> gameNames() {
@@ -22,6 +23,8 @@ public class gameFinder {
         switch (name) {
         case "Button Growth Game" :
             return new game.buttonGrowth.View(new game.buttonGrowth.Model(user));
+        case "Shi Ba La" :
+            return new game.shibala.View(new game.shibala.Model(user));
         }
         assert(false);
         return null;
