@@ -3,25 +3,25 @@ package main;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+//import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import utils.User;
-import utils.UserView;
+import utils.*;
+import game.*;
 
 
 public class Controller extends JPanel {
-	Buttons thing;
+	private static JPanel menu;
+	//JPanel currentPanel;
+	//Model currentModel;
+	
 	
 	private class Buttons extends JPanel {
 		JButton game1Button;
-		JButton game2Button;
-		JButton game3Button;
 		
 		GridBagConstraints config = new GridBagConstraints();
 		
@@ -32,41 +32,42 @@ public class Controller extends JPanel {
 			config.gridwidth = GridBagConstraints.REMAINDER;
 			
 	        game1Button = new JButton("Game 1");
-	        game1Button.addActionListener(new ButtonHandler());
-	        
-	        game2Button = new JButton("Game 2");
-	        game2Button.addActionListener(new ButtonHandler());
-	        
-	        game3Button = new JButton("Game 3");
-	        game3Button.addActionListener(new ButtonHandler());
-	        
+	        game1Button.addActionListener(new ChoosingHandler1());
+
 	        this.add(game1Button, config);
-	        this.add(game2Button, config);
-	        this.add(game3Button, config);
+
 		}
 	}
 	
-	private class ButtonHandler implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-        	String command = "You pressed " + e.getActionCommand();
-        	JButton newOne = new JButton(command);
-        	newOne.addActionListener(new ButtonHandler());
-        	thing.add(newOne, thing.config);
-        	thing.repaint();
-        	thing.revalidate();
-        	
-        	thing.remove((JButton) e.getSource());
-        	
-        	thing.repaint();
-        	thing.revalidate();
-        }
-    }
+	private class ChoosingHandler1 implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			Controller.this.removeAll();
+			Model model = new game.buttonGrowth.Model();
+			View view  = new game.buttonGrowth.View((game.buttonGrowth.Model)model);
+			Controller.this.add(view, BorderLayout.CENTER);
+			JButton exitButton = new JButton("Exit Game");
+			exitButton.addActionListener(new ExitHandler());
+			Controller.this.add(exitButton, BorderLayout.SOUTH);
+			Controller.this.repaint();
+			Controller.this.revalidate();
+		}
+	}
+	
+	private class ExitHandler implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			Controller.this.removeAll();
+			//currentPanel = menu;
+			Controller.this.add(menu, BorderLayout.CENTER);
+			Controller.this.repaint();
+			Controller.this.revalidate();
+		}
+	}
 	
 	Controller(User user) {
 		setLayout(new BorderLayout());
-		thing = new Buttons();
-		this.add(new UserView(user),BorderLayout.NORTH);
-		this.add(thing, BorderLayout.CENTER);
+		menu = new Buttons();
+		this.add(menu, BorderLayout.CENTER);
 	}
 }
