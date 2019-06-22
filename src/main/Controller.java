@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import utils.*;
@@ -17,6 +18,7 @@ import game.*;
 public class Controller extends JPanel {
 	private static JPanel menu;
 	private gameFinder gameFinder;
+	private String currentGameName;
 	
 	private class Buttons extends JPanel {
 		
@@ -41,6 +43,7 @@ public class Controller extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			Controller.this.removeAll();
 			View view  = gameFinder.findGame(evt.getActionCommand());
+			currentGameName = new String(evt.getActionCommand());
 			Controller.this.add(view, BorderLayout.CENTER);
 			JButton exitButton = new JButton("Exit Game");
 			exitButton.addActionListener(new ExitHandler());
@@ -53,6 +56,10 @@ public class Controller extends JPanel {
 	private class ExitHandler implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+		    int res = JOptionPane.showConfirmDialog(Controller.this, "Are you sure you want to leave " + currentGameName + "? "
+		            + "You may lose your bets if the game is not ended.", "Message", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		    if (res != JOptionPane.YES_OPTION)
+		        return;
 			Controller.this.removeAll();
 			Controller.this.add(menu, BorderLayout.CENTER);
 			Controller.this.repaint();
