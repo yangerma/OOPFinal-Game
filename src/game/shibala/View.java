@@ -93,6 +93,7 @@ public class View extends game.View{
 				model.startGame(betArea.getText());
 			} catch (RuntimeException e) {
 				showMessage(e.getMessage());
+				setBet.setEnabled(true);
 			}
 		}
 	}
@@ -110,6 +111,7 @@ public class View extends game.View{
 		intFormat = NumberFormat.getIntegerInstance();
 		intFormat.setGroupingUsed(false);
 		betArea = new JFormattedTextField(intFormat);
+		betArea.setFocusLostBehavior(JFormattedTextField.PERSIST);
 		setBet = new JButton("Place Bet");
 		setBet.addActionListener(new BetPlacedHandler());
 		messages = new JTextArea("Welcome to Shibala!\n");
@@ -130,7 +132,10 @@ public class View extends game.View{
 	
 	public void propertyChange(PropertyChangeEvent evt) {
 		String changed = evt.getPropertyName();
-		if(changed == "err") showMessage((String) evt.getNewValue());
+		if(changed == "err") {
+			showMessage((String) evt.getNewValue());
+			setBet.setEnabled(true);
+		}
 		else if(changed == "init") messages.setText((String) evt.getNewValue());
 		else if(changed == "msg") messages.append((String) evt.getNewValue());
 		else if(changed == "dieOne") dicePanel.setDieOne((int) evt.getNewValue());
