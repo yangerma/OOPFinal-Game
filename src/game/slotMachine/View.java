@@ -25,48 +25,48 @@ import javax.swing.JTextArea;
 import game.slotMachine.Model;
 
 public class View extends game.View{
-	JButton rollDice, setBet;
+	JButton rollSlots, setBet;
 	JTextArea messages;
 	NumberFormat intFormat;
 	JFormattedTextField betArea;
-	DicePanel dicePanel;
+	SlotsPanel slotsPanel;
 	Model model;
 	GridBagConstraints config = new GridBagConstraints();
 	
-	// The panel that shows the three dice
-	private class DicePanel extends JPanel {
-		ImageIcon[] allDice = new ImageIcon[7];
-		JLabel dieOne, dieTwo, dieThree;
+	// The panel that shows the slots
+	private class SlotsPanel extends JPanel {
+		ImageIcon[] allSlots = new ImageIcon[7];
+		JLabel slotOne, slotTwo, slotThree;
 		
-		DicePanel() {
+		SlotsPanel() {
 			setLayout(new GridBagLayout());
 			config.insets = new Insets(0, 20, 0, 20);
 			
 			for(int i = 1; i < 7; i++) {
-				allDice[i] = new ImageIcon("res/dice" + i + ".png");
+				allSlots[i] = new ImageIcon(getClass().getResource("/res/slot" + i + ".png"));
 			}
-			dieOne = new JLabel(allDice[6]);
-			dieTwo = new JLabel(allDice[6]);
-			dieThree = new JLabel(allDice[6]);
+			slotOne = new JLabel(allSlots[1]);
+			slotTwo = new JLabel(allSlots[1]);
+			slotThree = new JLabel(allSlots[1]);
 			
-			this.add(dieOne, config);
-			this.add(dieTwo, config);
+			this.add(slotOne, config);
+			this.add(slotTwo, config);
 			config.gridwidth = GridBagConstraints.REMAINDER;
-			this.add(dieThree, config);
+			this.add(slotThree, config);
 		}
 		
-		public void setDieOne(int which) {
-			dieOne.setIcon(allDice[which]);
+		public void setSlotOne(int which) {
+			slotOne.setIcon(allSlots[which]);
 			this.repaint();
 			this.revalidate();
 		}
-		public void setDieTwo(int which) {
-			dieTwo.setIcon(allDice[which]);
+		public void setSlotTwo(int which) {
+			slotTwo.setIcon(allSlots[which]);
 			this.repaint();
 			this.revalidate();
 		}
-		public void setDieThree(int which) {
-			dieThree.setIcon(allDice[which]);
+		public void setSlotThree(int which) {
+			slotThree.setIcon(allSlots[which]);
 			this.repaint();
 			this.revalidate();
 		}
@@ -77,7 +77,7 @@ public class View extends game.View{
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				model.rollDice();
+				model.rollSlot();
 			} catch (RuntimeException e) {
 				showMessage(e.getMessage());
 			}
@@ -91,8 +91,10 @@ public class View extends game.View{
 			try {
 				setBet.setEnabled(false);
 				model.startGame(betArea.getText());
+				rollSlots.setEnabled(true);
 			} catch (RuntimeException e) {
 				showMessage(e.getMessage());
+				setBet.setEnabled(true);
 			}
 		}
 	}
@@ -103,22 +105,23 @@ public class View extends game.View{
 		setLayout(new GridBagLayout());
 		
 		// Setting up the UI
-		dicePanel = new DicePanel();
-		rollDice = new JButton("Roll!");
-		rollDice.addActionListener(new RolledHandler());
-		rollDice.setEnabled(false);
+		slotsPanel = new SlotsPanel();
+		rollSlots = new JButton("Roll!");
+		rollSlots.addActionListener(new RolledHandler());
+		rollSlots.setEnabled(false);
 		intFormat = NumberFormat.getIntegerInstance();
 		intFormat.setGroupingUsed(false);
 		betArea = new JFormattedTextField(intFormat);
+		betArea.setFocusLostBehavior(JFormattedTextField.PERSIST);
 		setBet = new JButton("Place Bet");
 		setBet.addActionListener(new BetPlacedHandler());
-		messages = new JTextArea("Welcome to Shibala!\n");
+		messages = new JTextArea("Welcome to the slot machine!\n");
 		messages.setEditable(false);
 		messages.setPreferredSize(new Dimension(1000, 300));
 		JScrollPane scrollPane = new JScrollPane();
 		
-		add(dicePanel, config);
-		add(rollDice, config);
+		add(slotsPanel, config);
+		add(rollSlots, config);
 		JPanel betPanel = new JPanel(new GridLayout(1, 3));
 		betPanel.add(new JLabel("Place your bet here : "));
 		betPanel.add(betArea);
@@ -130,18 +133,17 @@ public class View extends game.View{
 	
 	public void propertyChange(PropertyChangeEvent evt) {
 		String changed = evt.getPropertyName();
-		if(changed == "err") showMessage((String) evt.getNewValue());
+		if(changed == "err") {
+			showMessage((String) evt.getNewValue());
+			setBet.setEnabled(true);
+		}
 		else if(changed == "init") messages.setText((String) evt.getNewValue());
 		else if(changed == "msg") messages.append((String) evt.getNewValue());
-		else if(changed == "dieOne") dicePanel.setDieOne((int) evt.getNewValue());
-		else if(changed == "dieTwo") dicePanel.setDieTwo((int) evt.getNewValue());
-		else if(changed == "dieThree") dicePanel.setDieThree((int) evt.getNewValue());
+		else if(changed == "slotOne") slotsPanel.setSlotOne((int) evt.getNewValue());
+		else if(changed == "slotTwo") slotsPanel.setSlotTwo((int) evt.getNewValue());
+		else if(changed == "slotThree") slotsPanel.setSlotThree((int) evt.getNewValue());
 		else if((Boolean) evt.getNewValue() == true){
-			messages.append("Your turn.\n");
-			rollDice.setEnabled(true);
-		}
-		else {
-			rollDice.setEnabled(false);
+			rollSlots.setEnabled(false);
 			setBet.setEnabled(true);
 		}
 	}

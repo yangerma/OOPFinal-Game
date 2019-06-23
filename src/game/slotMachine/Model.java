@@ -10,98 +10,113 @@ import utils.User;
 
 public class Model extends game.Model{
 	Timer timer;
-	boolean playerTurn = false;
-	int dieOne, dieTwo, dieThree, comResult, bet;
+	int slotOne, slotTwo, slotThree, result, bet;
 	// A constructor with the user as argument
 	public Model(User user) {
 		super(user);
 	}
 	
-	// A method to check if result is valid
-	private int checkDice() {
-		int[] results = {dieOne, dieTwo, dieThree};
-		int[] bg = {1, 2, 3};
-		int[] ffs = {4, 5, 6};
-		Arrays.sort(results);
-		if(Arrays.equals(bg, results)) return 0;
-		if(Arrays.equals(ffs, results)) return 10;
-		if(dieOne == dieTwo && dieTwo == dieThree) return 10 + dieOne;
-		if(dieOne == dieTwo) return dieThree;
-		if(dieTwo == dieThree) return dieOne;
-		if(dieOne == dieThree) return dieTwo;
+	// A method to check the result of slot machine
+	private int checkSlots() {
+		if(slotOne == slotTwo && slotTwo == slotThree) return 10 + slotOne;
+		if(slotOne == slotTwo) return slotOne;
+		if(slotTwo == slotThree) return slotTwo;
+		if(slotOne == slotThree) return slotThree;
 		return -1;
 	}
 	
-	// A method to show the result of dice roll on computer's turn
-	private void showResult1(int result) {
-		if(result == 0) pcs.firePropertyChange("msg", null, "Oof, I rolled a 1, 2, 3 :(\n");
-		else if(result == 10) pcs.firePropertyChange("msg", null, "Wow, I rolled a 4, 5, 6!\n");
-		else if(result > 10) pcs.firePropertyChange("msg", null, "Woohoo, it's a triple " + (result - 10) +"!\n");
-		else pcs.firePropertyChange("msg", null, "Well, I rolled a " + result + ".\n");
-		comResult = result;
-		pcs.firePropertyChange("status", false, true);
-		playerTurn = true;
-	}
-	
-	// A method to show the result of dice roll on player's turn
-	private void showResult2(int result) {
-		if(result == 0) pcs.firePropertyChange("msg", null, "Oof, you rolled a 1, 2, 3 :(\n");
-		else if(result == 10) pcs.firePropertyChange("msg", null, "Wow, you rolled a 4, 5, 6!\n");
-		else if(result > 10) pcs.firePropertyChange("msg", null, "Oh my god, it's a triple " + (result - 10) +"!\n");
-		else pcs.firePropertyChange("msg", null, "Well, you rolled a " + result + ".\n");
-		pcs.firePropertyChange("status", true, false);
-		playerTurn = false;
-		if(result > comResult) {
-			pcs.firePropertyChange("msg", null, "That means you beat me, congradulations!\nYou earned " + bet + " dollars.\n");
-			user.addMoney(2 * bet);
+	// A method to show the result of slot machine
+	private void showResult() {
+		result = checkSlots();
+		int earned = 0;
+		if(result == -1) 
+			pcs.firePropertyChange("msg", null, "Oof, it's a lost\nYou lost " + bet + " dollar(s).\n");
+		else if(result == 1) {
+			pcs.firePropertyChange("msg", null, "You got 2 lucky sevens and won 10 times your bet!\n");
+			user.addMoney(6 * bet);
+			earned = 5 * bet;
 		}
-		else if(result < comResult) pcs.firePropertyChange("msg", null, "That means you lost...\nYou lost " + bet + " dollars.\n");
-		else pcs.firePropertyChange("msg", null, "It's a tie!\n");
+		else if(result == 2) {
+			pcs.firePropertyChange("msg", null, "You got 2 diamonds and won 2 times your bet!\n");
+			user.addMoney(3 * bet);
+			earned = 2 * bet;
+		}
+		else if(result < 10) {
+			pcs.firePropertyChange("msg", null, "You got 2 same symbol and therefore got your bet back!\n");
+			user.addMoney(bet);
+		}
+		else {
+			result -= 10;
+			if(result == 1) {
+				pcs.firePropertyChange("msg", null, "JACKPOT!! You won 100 times your bet!!\n");
+				user.addMoney(101 * bet);
+				earned = 100 * bet;
+			}
+			else if(result == 2) {
+				pcs.firePropertyChange("msg", null, "3 diamonds in a row! You won 10 times your bet!!\n");
+				user.addMoney(11 * bet);
+				earned = 10 * bet;
+			}
+			else {
+				pcs.firePropertyChange("msg", null, "3 in a row! You won 5 times your bet!!\n");
+				user.addMoney(6 * bet);
+				earned = 5 * bet;
+			}
+		}
+		if(result != -1) pcs.firePropertyChange("msg", null, "You won "+ earned + " dollar(s)\n");
+		pcs.firePropertyChange("status", false, true);
 		pcs.firePropertyChange("msg", null, "If you want to play again, just place another bet.\n");
 	}
 	
 	// The timer to start animation of dice roll
-	private class RandomDieHandler implements ActionListener {
+	private class RandomSlotHandler implements ActionListener {
 		int oneHit = 0;
 		int twoHit = 0;
 		int threeHit = 0;
-		int result;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(oneHit == 2 && twoHit == 2 && threeHit == 2) {
 				timer.stop();
-				int result = checkDice();
-				if(result == -1) {
-					pcs.firePropertyChange("msg", null, "Oops, nothing, let's try again.\n");
-					if(!playerTurn) rollDice();
-				}
-				else if(!playerTurn) showResult1(result);
-				else showResult2(result);
+				showResult();
 			}
 			if(oneHit != 2) {
 				result = (int) (Math.random() * 6 + 1);
-				if(result == dieOne) oneHit++;
-				pcs.firePropertyChange("dieOne", null, result);
+				if(result == slotOne) oneHit++;
+				pcs.firePropertyChange("slotOne", null, result);
 			}
 			if(twoHit != 2) {
 				result = (int) (Math.random() * 6 + 1);
-				if(result == dieTwo) twoHit++;
-				pcs.firePropertyChange("dieTwo", null, result);
+				if(result == slotTwo) twoHit++;
+				pcs.firePropertyChange("slotTwo", null, result);
 			}
 			if(threeHit != 2) {
 				result = (int) (Math.random() * 6 + 1);
-				if(result == dieThree) threeHit++;
-				pcs.firePropertyChange("dieThree", null, result);
+				if(result == slotThree) threeHit++;
+				pcs.firePropertyChange("slotThree", null, result);
 			}
 		}
 	}
 	
+	/* A method to decide final result
+	 * 5% for a 7 symbol
+	 * 15% for a diamond symbol
+	 * 20% for the rest
+	 */
+	private int randMap(int num) {
+		if(num <= 5) return 1;
+		if(num <= 20) return 2;
+		if(num <= 40) return 3;
+		if(num <= 60) return 4;
+		if(num <= 80) return 5;
+		return 6;
+	}
+	
 	// Roll the dice until valid result
-	public void rollDice() {
-		dieOne = (int) (Math.random() * 6 + 1);
-		dieTwo = (int) (Math.random() * 6 + 1);
-		dieThree = (int) (Math.random() * 6 + 1);
-		timer = new Timer(100, new RandomDieHandler());
+	public void rollSlot() {
+		slotOne = randMap((int) (Math.random() * 100 + 1));
+		slotTwo = randMap((int) (Math.random() * 100 + 1));
+		slotThree = randMap((int) (Math.random() * 100 + 1));
+		timer = new Timer(100, new RandomSlotHandler());
 		timer.start();
 	}
 	
@@ -110,8 +125,7 @@ public class Model extends game.Model{
 		try {
 			bet = Integer.parseInt(betValue);
 			user.subMoney(bet);
-			pcs.firePropertyChange("init", null, "Bet placed, value : " + bet + "\nHere we go!\n");
-			rollDice();
+			pcs.firePropertyChange("init", null, "Bet placed, value : " + bet + "\nPress roll button to start!\n");
 		} catch (NumberFormatException e){
 			pcs.firePropertyChange("err", null, "Wrong format!");
 		}
