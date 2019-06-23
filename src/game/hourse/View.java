@@ -133,8 +133,14 @@ public class View extends game.View implements ActionListener,ChangeListener{
 				/**
 				 * check input
 				 */
-				if(!agree.isSelected() || model.getMoney()-wrap(inputMoney.getValue()) < 0 || wrap(inputMoney.getValue()) < 0 || wrap(guessHorse.getValue()) <= 0 || wrap(guessHorse.getValue()) > 4) {
-					throw new RuntimeException();
+				if(!agree.isSelected()) {
+					throw new RuntimeException("you don't agree.");
+				}
+				else if(model.getMoney()-wrap(inputMoney.getValue()) < 0) {
+					throw new RuntimeException("You don't have enough money");
+				}
+				else if(wrap(inputMoney.getValue()) < 0 || wrap(guessHorse.getValue()) <= 0 || wrap(guessHorse.getValue()) > 4) {
+					throw new RuntimeException("Error input");
 				}
 				else {
 					model.subtract(wrap(inputMoney.getValue()));
@@ -157,7 +163,8 @@ public class View extends game.View implements ActionListener,ChangeListener{
 				}
 			}catch(Exception err) {
 				info.setText(err.toString());
-				winner.setText("Error input or don't have enough money or not agree.");
+				winner.setText("");
+				View.super.showMessage(err.getMessage());
 			}
 		}
 		/**
