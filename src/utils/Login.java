@@ -19,19 +19,57 @@ import javax.swing.JTextField;
 public class Login extends JPanel {
 	private PropertyChangeSupport support;
 	
-	JLabel userLabel, pwLabel;
-	JTextField userArea, pwArea;
-	JButton loginButton;
+	JLabel userLabel, pwLabel, pwConfirmLabel;
+	JTextField userArea, pwArea, pwConfirmArea;
+	JPanel fields;
+	JButton loginButton, registerButton, switchButton;
+	GridBagConstraints config;
+	boolean isLogin; 
 	
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		this.support.addPropertyChangeListener(pcl);
 	}
+	private void setLogin() {
+	    isLogin = true;
+	    switchButton.setText("Don't have an account? Register!");
+	    fields.remove(pwConfirmLabel);
+	    fields.remove(pwConfirmArea);
+	    this.remove(registerButton);
+	    this.add(loginButton, config);
+	    this.add(switchButton, config);
+	}
+	private void setRegister() {
+	    isLogin = false;
+	    switchButton.setText("Have an account? Login!");
+	    fields.add(pwConfirmLabel);
+        fields.add(pwConfirmArea);
+        this.remove(loginButton);
+        this.add(registerButton, config);
+        this.add(switchButton, config);
+	}
 	
-	private class ButtonHandler implements ActionListener {
+	private class LoginButtonHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
         	User user = new User(userArea.getText(), pwArea.getText());
         	support.firePropertyChange("user", 0, user);
+        }
+    }
+	private class RegisterButtonHandler implements ActionListener {
+	    @Override
+        public void actionPerformed(ActionEvent e) {
+	        // TODO
+            User user = new User(userArea.getText(), pwArea.getText());
+            support.firePropertyChange("user", 0, user);
+        }
+	}
+	private class SwitchButtonHandler implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (isLogin)
+                setRegister();
+            else
+                setLogin();
         }
     }
 	
@@ -39,7 +77,7 @@ public class Login extends JPanel {
 		setLayout(new GridBagLayout());
 		support = new PropertyChangeSupport(this);
 		
-		GridBagConstraints config = new GridBagConstraints();
+		config = new GridBagConstraints();
 		config.anchor = GridBagConstraints.CENTER;
 		config.gridwidth = GridBagConstraints.REMAINDER;
         
@@ -51,15 +89,25 @@ public class Login extends JPanel {
         pwLabel.setText("Password : ");
         pwArea = new JPasswordField();
         
-        JPanel fields = new JPanel(new GridLayout(2, 2));
+        pwConfirmLabel = new JLabel();
+        pwConfirmLabel.setText("Retype Password : ");
+        pwConfirmArea = new JPasswordField();
+        
+        fields = new JPanel(new GridLayout(3, 2));
         fields.add(userLabel);
         fields.add(userArea);
         fields.add(pwLabel);
         fields.add(pwArea);
         
         loginButton = new JButton("Log In");
-        loginButton.addActionListener(new ButtonHandler());
+        loginButton.addActionListener(new LoginButtonHandler());
+        registerButton = new JButton("Register");
+        registerButton.addActionListener(new RegisterButtonHandler());
+        switchButton = new JButton("");
+        switchButton.addActionListener(new SwitchButtonHandler());
+        
         this.add(fields, config);
-        this.add(loginButton, config);
+        
+        setLogin();
 	}
 }
