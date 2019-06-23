@@ -42,9 +42,8 @@ public class Model extends game.Model{
 			earned = 10 * bet;
 		}
 		else if(result < 10) {
-			pcs.firePropertyChange("msg", null, "You got 2 same symbol won the same as your bet!\n");
-			user.addMoney(2 * bet);
-			earned = bet;
+			pcs.firePropertyChange("msg", null, "You got 2 same symbol and won back your bet!\n");
+			user.addMoney(bet);
 		}
 		else {
 			result -= 10;
