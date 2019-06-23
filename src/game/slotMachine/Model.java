@@ -32,35 +32,36 @@ public class Model extends game.Model{
 		if(result == -1) 
 			pcs.firePropertyChange("msg", null, "Oof, it's a lost\nYou lost " + bet + " dollar(s).\n");
 		else if(result == 1) {
-			pcs.firePropertyChange("msg", null, "You got 2 lucky sevens and won 10 times your bet!\n");
-			user.addMoney(6 * bet);
-			earned = 5 * bet;
+			pcs.firePropertyChange("msg", null, "You got 2 lucky sevens and won 50 times your bet!\n");
+			user.addMoney(51 * bet);
+			earned = 50 * bet;
 		}
 		else if(result == 2) {
-			pcs.firePropertyChange("msg", null, "You got 2 diamonds and won 2 times your bet!\n");
-			user.addMoney(3 * bet);
-			earned = 2 * bet;
+			pcs.firePropertyChange("msg", null, "You got 2 diamonds and won 10 times your bet!\n");
+			user.addMoney(11 * bet);
+			earned = 10 * bet;
 		}
 		else if(result < 10) {
-			pcs.firePropertyChange("msg", null, "You got 2 same symbol and therefore got your bet back!\n");
-			user.addMoney(bet);
+			pcs.firePropertyChange("msg", null, "You got 2 same symbol won the same as your bet!\n");
+			user.addMoney(2 * bet);
+			earned = bet;
 		}
 		else {
 			result -= 10;
 			if(result == 1) {
-				pcs.firePropertyChange("msg", null, "JACKPOT!! You won 100 times your bet!!\n");
-				user.addMoney(101 * bet);
-				earned = 100 * bet;
+				pcs.firePropertyChange("msg", null, "JACKPOT!! You won 200 times your bet!!\n");
+				user.addMoney(201 * bet);
+				earned = 200 * bet;
 			}
 			else if(result == 2) {
-				pcs.firePropertyChange("msg", null, "3 diamonds in a row! You won 10 times your bet!!\n");
-				user.addMoney(11 * bet);
-				earned = 10 * bet;
+				pcs.firePropertyChange("msg", null, "3 diamonds in a row! You won 50 times your bet!!\n");
+				user.addMoney(51 * bet);
+				earned = 50 * bet;
 			}
 			else {
-				pcs.firePropertyChange("msg", null, "3 in a row! You won 5 times your bet!!\n");
-				user.addMoney(6 * bet);
-				earned = 5 * bet;
+				pcs.firePropertyChange("msg", null, "3 in a row! You won 10 times your bet!!\n");
+				user.addMoney(11 * bet);
+				earned = 10 * bet;
 			}
 		}
 		if(result != -1) pcs.firePropertyChange("msg", null, "You won "+ earned + " dollar(s)\n");
