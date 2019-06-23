@@ -11,12 +11,15 @@ import java.beans.PropertyChangeSupport;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 
 public class Login extends JPanel {
+    private static final int PASSWORD_MIN_LENGTH = 4;
+    
 	private PropertyChangeSupport support;
 	
 	JLabel userLabel, pwLabel, pwConfirmLabel;
@@ -48,19 +51,49 @@ public class Login extends JPanel {
         this.add(switchButton, config);
 	}
 	
+	private void emptyCheck() {
+	    if (userArea.getText().length() == 0)
+	        throw new RuntimeException("Please enter your username.");
+	    if (pwArea.getText().length() == 0)
+	        throw new RuntimeException("Please enter your password.");
+	}
+	
 	private class LoginButtonHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-        	User user = new User(userArea.getText(), pwArea.getText());
+            User user = null;
+            try {
+                emptyCheck();
+                user = User.login(userArea.getText(), pwArea.getText());
+            } catch (Exception exc) {
+                JOptionPane.showMessageDialog(Login.this, exc.getMessage(), "Message", JOptionPane.WARNING_MESSAGE);
+                return;
+            } finally {
+                pwArea.setText("");
+                pwConfirmArea.setText("");
+            }
         	support.firePropertyChange("user", 0, user);
         }
     }
 	private class RegisterButtonHandler implements ActionListener {
 	    @Override
         public void actionPerformed(ActionEvent e) {
-	        // TODO
-            User user = new User(userArea.getText(), pwArea.getText());
-            support.firePropertyChange("user", 0, user);
+	        try {
+	            emptyCheck();
+	            if (!pwArea.getText().equals(pwConfirmArea.getText()))
+	                throw new RuntimeException("Retyped password is not the same as your password.");
+	            if (pwArea.getText().length() < PASSWORD_MIN_LENGTH)
+	                throw new RuntimeException("Your password is too short. Should be at least "
+	                        + PASSWORD_MIN_LENGTH + " characters.");
+                User.register(userArea.getText(), pwArea.getText());
+            } catch (Exception exc) {
+                JOptionPane.showMessageDialog(Login.this, exc.getMessage(), "Message", JOptionPane.WARNING_MESSAGE);
+                return;
+            } finally {
+                pwArea.setText("");
+                pwConfirmArea.setText("");
+            }
+            JOptionPane.showMessageDialog(Login.this, "Register Succeeded!");
         }
 	}
 	private class SwitchButtonHandler implements ActionListener {
