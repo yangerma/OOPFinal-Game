@@ -52,11 +52,14 @@ public class Model extends game.Model{
 		pcs.firePropertyChange("status", true, false);
 		playerTurn = false;
 		if(result > comResult) {
-			pcs.firePropertyChange("msg", null, "That means you beat me, congradulations!\nYou earned " + bet + " dollars.\n");
+			pcs.firePropertyChange("msg", null, "That means you beat me, congradulations!\nYou earned " + bet + " dollar(s).\n");
 			user.addMoney(2 * bet);
 		}
-		else if(result < comResult) pcs.firePropertyChange("msg", null, "That means you lost...\nYou lost " + bet + " dollars.\n");
-		else pcs.firePropertyChange("msg", null, "It's a tie!\n");
+		else if(result < comResult) pcs.firePropertyChange("msg", null, "That means you lost...\nYou lost " + bet + " dollar(s).\n");
+		else{
+			pcs.firePropertyChange("msg", null, "It's a tie!\n");
+			user.addMoney(bet);
+		}
 		pcs.firePropertyChange("msg", null, "If you want to play again, just place another bet.\n");
 	}
 	
