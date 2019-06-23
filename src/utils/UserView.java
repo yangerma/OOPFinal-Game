@@ -39,13 +39,14 @@ public class UserView extends JPanel implements PropertyChangeListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String res = JOptionPane.showInputDialog("How much money do you want to add?");
+            if (res == null)
+                return;
             int moneyDiff = 0;
             try {
                 moneyDiff = Integer.parseInt(res);
             } catch(NumberFormatException exc) {
                 JOptionPane pane = new JOptionPane("Your input \"" + res + "\" is not a valid number.");
                 JDialog dialog = pane.createDialog("Input not a number");
-                dialog.add(new JLabel("~~~"));
                 dialog.setVisible(true);
                 return;
             }
