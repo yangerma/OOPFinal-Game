@@ -43,7 +43,7 @@ public class View extends game.View{
 			config.insets = new Insets(0, 20, 0, 20);
 			
 			for(int i = 1; i < 7; i++) {
-				allDice[i] = new ImageIcon("res/dice" + i + ".png");
+				allDice[i] = new ImageIcon(getClass().getResource("/res/dice" + i + ".png"));
 			}
 			dieOne = new JLabel(allDice[6]);
 			dieTwo = new JLabel(allDice[6]);
