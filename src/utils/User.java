@@ -11,10 +11,11 @@ import java.sql.Statement;
 
 import main.Main;
 
+import jbcrypt.*;
+
 
 public class User {
     private String name;
-    private String pw;
     private int money;
     private Connection connection;
 
@@ -84,7 +85,7 @@ public class User {
 			ResultSet rs = pstmt.executeQuery();
 			if(!rs.next())
 				throw new RuntimeException("Wrong username or password.");
-			if(!password.contentEquals(rs.getString("password")))
+			if(!BCrypt.checkpw(password, rs.getString("password")))
 				throw new RuntimeException("Wrong username or password.");
 			user.name = rs.getString("name");
 			user.money = rs.getInt("money");
@@ -105,9 +106,11 @@ public class User {
 			if(rs.next())
 				throw new RuntimeException("This username has already been used.");
 			command = "INSERT INTO users VALUES (?, ?, ?)";
+			String passwordHashed = BCrypt.hashpw(password, BCrypt.gensalt());
+			String aa = BCrypt.gensalt();
 			pstmt = conn.prepareStatement(command);
 			pstmt.setString(1, username);
-			pstmt.setString(2, password);
+			pstmt.setString(2, passwordHashed);
 			pstmt.setInt(3, initialMoney);
 			pstmt.executeUpdate();
     	} catch (SQLException e) {
