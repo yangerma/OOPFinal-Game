@@ -1,4 +1,9 @@
 package main;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
@@ -10,12 +15,47 @@ import utils.Login;
 import utils.User;
 import utils.UserView;
 
+import java.io.File;
+
 public class Main implements PropertyChangeListener {
 	static JFrame window;
 	static boolean loggedIn = false;
 	static Login loginPage;
+	private static final String dbPathTail = File.separator + "sqlite" 
+			+ File.separator + "db";
+	public static String url;
+	private static final String tableExistQuery = "SELECT name FROM sqlite_master WHERE "
+			+ "type='table' AND name='users'";
+	private static final String createTable = "CREATE TABLE users ("
+			+ "`name` TEXT NOT NULL,"
+			+ "`password` TEXT NOT NULL,"
+			+ "`money` INT NOT NULL)";
+	
+    public static void createNewDatabase() {
+    	String path = System.getProperty("user.home") + dbPathTail;
+    	File dir = new File(path);
+    	dir.mkdirs();
+    	
+    	url = "jdbc:sqlite:"+dir+ File.separator+"gameUsers.db";
+    	System.out.println(url);
+        
+        try {
+        	Connection connection = DriverManager.getConnection(url);
+        	Statement statement = connection.createStatement();
+        	statement.setQueryTimeout(5);
+        	System.out.println(tableExistQuery);
+        	ResultSet res = statement.executeQuery(tableExistQuery);
+        	System.out.println(res);
+        	if(!res.next())
+        		statement.execute(createTable);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+    }
 	
 	public static void main(String[] args) {
+		createNewDatabase();
 		Main index = new Main();
         window = new JFrame();
         window.setLayout(new BorderLayout());
