@@ -14,14 +14,17 @@ public class Model extends game.Model {
 	public void setMoney(int money) {
 		user.setMoney(money);
 	}
+	public void subtract(int money) {
+		user.subMoney(money);
+	}
 	public void check(int horse, int guess, int money, JLabel label) {
 		try {
 			if (horse == guess) {
-				setMoney(getMoney()+money*5);
+				setMoney(getMoney()+money*6);
 				label.setText("Horse "+Integer.valueOf(horse).toString()+" wins! You get $"+Integer.valueOf(money*5).toString());
 			}
 			else {
-				setMoney(getMoney()-money*2);
+				user.subMoney(money);
 				label.setText("Horse "+Integer.valueOf(horse).toString()+" wins! You lose your money");
 			}
 		}catch(Exception err) {

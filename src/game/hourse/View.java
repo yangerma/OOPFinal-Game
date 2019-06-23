@@ -13,6 +13,7 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
@@ -41,7 +42,10 @@ public class View extends game.View implements ActionListener,ChangeListener{
 	JLabel guessLabel;
 	JLabel winner;
 	int win=0;
-	
+	JCheckBox agree;
+	/**
+	 * set GUI layout
+	 */
 	public View(Model model) {
 		super(model);
 		this.model = model;
@@ -70,10 +74,12 @@ public class View extends game.View implements ActionListener,ChangeListener{
 		moneyLabel = new JLabel("Set money for game");
 		guessLabel = new JLabel("Choose a horse");
 		winner = new JLabel("");
+		agree = new JCheckBox("I agree");
 		add(guessLabel, config);
 		add(guessHorse, config);
 		add(moneyLabel, config);
 		add(inputMoney, config);
+		add(agree, config);
 		add(start, config);
 		add(hourseOne, config);
 		add(hourseTwo, config);
@@ -81,13 +87,14 @@ public class View extends game.View implements ActionListener,ChangeListener{
 		add(hourseFour, config);
 		add(info, config);
 		add(winner, config);
-		start.addActionListener(this);
 	}
 	
 	public void propertyChange(PropertyChangeEvent evt) {
 		
 	}
-	
+	/**
+	 * set horse
+	 */
 	void setHourse(JProgressBar progressbar, int color) {
 		progressbar.setOrientation(JProgressBar.HORIZONTAL);
 		progressbar.setMinimum(0);
@@ -111,25 +118,32 @@ public class View extends game.View implements ActionListener,ChangeListener{
 			progressbar.setBackground(Color.red);
 		}
 	}
-	
+	/**
+	 * wrapper for convert to Integer
+	 */
 	public int wrap(Object o) {
-		return Integer.valueOf(o.toString());
+		return Integer.valueOf(o.toString()).intValue();
 	}
-	
+	/**
+	 * action performance for each objects
+	 */
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==start){
 			try {
-				if(model.getMoney()-wrap(inputMoney.getValue()) < 0 || wrap(inputMoney.getValue()) < 0 || wrap(guessHorse.getValue()) <= 0 || wrap(guessHorse.getValue()) > 4) {
+				/**
+				 * check input
+				 */
+				if(!agree.isSelected() || model.getMoney()-wrap(inputMoney.getValue()) < 0 || wrap(inputMoney.getValue()) < 0 || wrap(guessHorse.getValue()) <= 0 || wrap(guessHorse.getValue()) > 4) {
 					throw new RuntimeException();
 				}
 				else {
-					//model.setMoney(model.getMoney()-wrap(inputMoney.getValue()));
+					model.subtract(wrap(inputMoney.getValue()));
 					start.setVisible(false);
 					moneyLabel.setVisible(false);
 					guessLabel.setVisible(false);
 					inputMoney.setVisible(false);
 					guessHorse.setVisible(false);
-					
+					agree.setVisible(false);
 					info.setText("");
 					winner.setText("");
 					hourseOne.setValue(0);
@@ -143,9 +157,12 @@ public class View extends game.View implements ActionListener,ChangeListener{
 				}
 			}catch(Exception err) {
 				info.setText(err.toString());
-				winner.setText("Error input or don't have enough money.");
+				winner.setText("Error input or don't have enough money or not agree.");
 			}
 		}
+		/**
+		 * set task for each timer
+		 */
 		if(e.getSource()==timerOne){
 			int value = hourseOne.getValue();
 			if(value<100) {
@@ -210,7 +227,9 @@ public class View extends game.View implements ActionListener,ChangeListener{
 			}
 		}
 	}
-	
+	/**
+	 * performance when progress bar changed
+	 */
 	public void stateChanged(ChangeEvent e1) {
 		
 		if(e1.getSource() == hourseOne){
@@ -249,6 +268,10 @@ public class View extends game.View implements ActionListener,ChangeListener{
 				counter += 1;
 			}
 		}
+		/**
+		 * game end
+		 * clean up
+		 */
 		if(counter == 4) {
 			counter = 0;
 			model.check(win, wrap(guessHorse.getValue()), wrap(inputMoney.getValue()), winner);
@@ -257,6 +280,8 @@ public class View extends game.View implements ActionListener,ChangeListener{
 			moneyLabel.setVisible(true);
 			guessLabel.setVisible(true);
 			guessHorse.setVisible(true);
+			agree.setSelected(false);
+			agree.setVisible(true);
 		}
 	}
 }
