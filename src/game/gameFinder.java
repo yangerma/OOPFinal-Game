@@ -10,6 +10,7 @@ public class gameFinder {
 	private final String shibala = "Shi Ba La";
 	private final String hourse = "Hourse Game";
 	private final String guessNumber = "Guess Number";
+	private final String slotMachine = "Slot Machine";
 	List<String> nameList = new ArrayList<String>();
     User user;
     public gameFinder(User user) {
@@ -19,6 +20,7 @@ public class gameFinder {
         nameList.add(shibala);
         nameList.add(hourse);
         nameList.add(guessNumber);
+        nameList.add(slotMachine);
     }
     
     public List<String> gameNames() {
@@ -35,7 +37,9 @@ public class gameFinder {
         	return new game.hourse.View(new game.hourse.Model(user));
         case guessNumber:
         	return new game.guessNumber.View(new game.guessNumber.Model(user));
-        }
+	    case slotMachine:
+	    	return new game.slotMachine.View(new game.slotMachine.Model(user));
+	    }
         assert(false);
         return null;
     }
