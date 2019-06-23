@@ -48,6 +48,13 @@ public class User {
         if (money < 0)
             throw new NegativeMoneyException();
         this.money = money;
+        try {
+            Statement stmt = connection.createStatement();
+            //stmt.setQueryTimeout(5);
+            stmt.executeUpdate(String.format("UPDATE users SET money=%d WHERE name='%s'", this.money, this.name));	
+        } catch(SQLException e) {
+    		System.err.println(e.getMessage());
+        }
         pcs.firePropertyChange("money", null, money);
     }
     private void startConnection() {
@@ -55,7 +62,7 @@ public class User {
     		// create a database connection
     		connection = DriverManager.getConnection(Main.url);
     	} catch (SQLException e) {
-    		System.err.println(e.getMessage());
+    		System.err.println(e);
     	}
     }
     private void closeConnection() {
@@ -63,7 +70,7 @@ public class User {
     		if (connection != null)
     			connection.close();
     	} catch (SQLException e) {
-    		System.err.println(e.getMessage());
+    		System.err.println(e);
     	}
     }
     
@@ -88,8 +95,9 @@ public class User {
     }
     
     public static void register(String username, String password) {
+    	Connection conn=null;
     	try {
-    		Connection conn = DriverManager.getConnection(Main.url);
+    		conn = DriverManager.getConnection(Main.url);
 			String command = "SELECT * FROM users WHERE name = ?";
 			PreparedStatement pstmt = conn.prepareStatement(command);
 			pstmt.setString(1, username);
@@ -104,9 +112,14 @@ public class User {
 			pstmt.executeUpdate();
     	} catch (SQLException e) {
 			System.err.println(e);
+    	} finally {
+    		try {
+	        	conn.close();	
+	    	} catch(SQLException e) {
+	            System.err.println(e);
+	    	}
     	}
     }
-    
     
     public void logout() {
     	closeConnection();

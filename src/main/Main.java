@@ -33,25 +33,27 @@ public class Main implements PropertyChangeListener {
 	
     public static void createNewDatabase() {
     	String path = System.getProperty("user.home") + dbPathTail;
+    	Connection conn=null;
     	File dir = new File(path);
     	dir.mkdirs();
     	
     	url = "jdbc:sqlite:"+dir+ File.separator+"gameUsers.db";
-    	System.out.println(url);
-        
         try {
-        	Connection connection = DriverManager.getConnection(url);
-        	Statement statement = connection.createStatement();
+        	conn = DriverManager.getConnection(url);
+        	Statement statement = conn.createStatement();
         	statement.setQueryTimeout(5);
-        	System.out.println(tableExistQuery);
         	ResultSet res = statement.executeQuery(tableExistQuery);
-        	System.out.println(res);
         	if(!res.next())
         		statement.execute(createTable);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e);
+        } finally {
+        	try {
+            	conn.close();	
+        	} catch(SQLException e) {
+                System.err.println(e);
+        	}
         }
-        
     }
 	
 	public static void main(String[] args) {
