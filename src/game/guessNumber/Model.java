@@ -6,11 +6,6 @@ import java.util.Collections;
 import utils.myRandom;
 import utils.User;
 
-class InvalidBetException extends Exception {
-	public InvalidBetException(String msg) {
-		super(msg);
-	}
-}
 
 public class Model extends game.Model {
 	Integer myAnswer;
