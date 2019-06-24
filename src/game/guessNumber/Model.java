@@ -123,14 +123,16 @@ public class Model extends game.Model {
 	void playerLose() {
 		pcs.firePropertyChange(Properties.infoUpdate, "",
 				String.format("Oops. Seems like I win :D\n"
-						+ "You lose your bet of %d dollars.\n", bet));
+						+ "You lose your bet of %d dollars.\n"
+						+ "My answer is %04d.\n", bet, myAnswer));
 		pcs.firePropertyChange(Properties.button, "", "restart");
 	}
 	
 	void cheat() {
 		pcs.firePropertyChange(Properties.infoUpdate, "",
 				String.format("You Cheat!\nNo number corresponds to your responses.\n"
-						+ "You lose your bet of %d dollars.\n", bet));
+						+ "You lose your bet of %d dollars.\n"
+						+ "Btw, my answer is %04d\n", bet, myAnswer));
 		pcs.firePropertyChange(Properties.button, "", "restart");
 	}
 	
