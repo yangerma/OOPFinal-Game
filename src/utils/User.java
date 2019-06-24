@@ -17,7 +17,7 @@ import jbcrypt.*;
 public class User {
     private String name;
     private int money;
-    private Connection connection;
+    //private Connection connection;
 
     private static final int initialMoney = 1000;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
@@ -25,6 +25,10 @@ public class User {
         this.pcs.addPropertyChangeListener(listener);
     }
 
+    User(String name, int money) {
+    	this.name = name;
+    	this.money = money;
+    }
 
     public String getName() {
         return new String(name);
@@ -49,46 +53,32 @@ public class User {
         if (money < 0)
             throw new NegativeMoneyException();
         this.money = money;
-        try {
-            Statement stmt = connection.createStatement();
-            //stmt.setQueryTimeout(5);
+        try (Connection conn = DriverManager.getConnection(Main.url);
+        		Statement stmt = conn.createStatement()){
+            stmt.setQueryTimeout(5);
             stmt.executeUpdate(String.format("UPDATE users SET money=%d WHERE name='%s'", this.money, this.name));	
         } catch(SQLException e) {
     		System.err.println(e.getMessage());
         }
         pcs.firePropertyChange("money", null, money);
     }
-    private void startConnection() {
-    	try {
-    		// create a database connection
-    		connection = DriverManager.getConnection(Main.url);
-    	} catch (SQLException e) {
-    		System.err.println(e);
-    	}
-    }
-    private void closeConnection() {
-    	try {
-    		if (connection != null)
-    			connection.close();
-    	} catch (SQLException e) {
-    		System.err.println(e);
-    	}
-    }
     
     public static User login(String username, String password) {
-    	User user =  new User();
-    	user.startConnection();
-    	try {
-			String command = "SELECT * FROM users WHERE name = ?";
-			PreparedStatement pstmt = user.connection.prepareStatement(command);
+    	User user = null;
+    	//user.startConnection();
+		String command = "SELECT * FROM users WHERE name = ?";
+    	try (
+    		Connection conn = DriverManager.getConnection(Main.url);
+    		PreparedStatement pstmt = conn.prepareStatement(command);
+    	) {
 			pstmt.setString(1, username);
-			ResultSet rs = pstmt.executeQuery();
-			if(!rs.next())
-				throw new RuntimeException("Wrong username or password.");
-			if(!BCrypt.checkpw(password, rs.getString("password")))
-				throw new RuntimeException("Wrong username or password.");
-			user.name = rs.getString("name");
-			user.money = rs.getInt("money");
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if(!rs.next())
+					throw new RuntimeException("Wrong username or password.");
+				if(!BCrypt.checkpw(password, rs.getString("password")))
+					throw new RuntimeException("Wrong username or password.");
+				user = new User(rs.getString("name"), rs.getInt("money"));
+			}
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
@@ -96,36 +86,28 @@ public class User {
     }
     
     public static void register(String username, String password) {
-    	Connection conn=null;
-    	try {
-    		conn = DriverManager.getConnection(Main.url);
-			String command = "SELECT * FROM users WHERE name = ?";
-			PreparedStatement pstmt = conn.prepareStatement(command);
+		String command = "SELECT * FROM users WHERE name = ?";
+    	try (
+    		Connection conn = DriverManager.getConnection(Main.url);
+    		PreparedStatement pstmt = conn.prepareStatement(command);		
+    	) {
 			pstmt.setString(1, username);
-			ResultSet rs = pstmt.executeQuery();
-			if(rs.next())
-				throw new RuntimeException("This username has already been used.");
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if(rs.next())
+					throw new RuntimeException("This username has already been used.");
+			}
 			command = "INSERT INTO users VALUES (?, ?, ?)";
 			String passwordHashed = BCrypt.hashpw(password, BCrypt.gensalt());
-			String aa = BCrypt.gensalt();
-			pstmt = conn.prepareStatement(command);
-			pstmt.setString(1, username);
-			pstmt.setString(2, passwordHashed);
-			pstmt.setInt(3, initialMoney);
-			pstmt.executeUpdate();
+			try(PreparedStatement updatestmt = conn.prepareStatement(command)) {
+				updatestmt.setString(1, username);
+				updatestmt.setString(2, passwordHashed);
+				updatestmt.setInt(3, initialMoney);
+				updatestmt.executeUpdate();
+			}
     	} catch (SQLException e) {
 			System.err.println(e);
-    	} finally {
-    		try {
-	        	conn.close();	
-	    	} catch(SQLException e) {
-	            System.err.println(e);
-	    	}
+			throw new RuntimeException("Database error: Register unsuccesful.");
     	}
-    }
-    
-    public void logout() {
-    	closeConnection();
     }
     
     class NegativeMoneyException extends RuntimeException {
