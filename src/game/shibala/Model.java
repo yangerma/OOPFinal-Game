@@ -77,6 +77,7 @@ public class Model extends game.Model{
 				if(result == -1) {
 					pcs.firePropertyChange("msg", null, "Oops, nothing, let's try again.\n");
 					if(!playerTurn) rollDice();
+					else pcs.firePropertyChange("button", false, true);
 				}
 				else if(!playerTurn) showResult1(result);
 				else showResult2(result);

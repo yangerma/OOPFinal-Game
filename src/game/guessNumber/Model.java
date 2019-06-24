@@ -132,7 +132,7 @@ public class Model extends game.Model {
 		pcs.firePropertyChange(Properties.infoUpdate, "",
 				String.format("You Cheat!\nNo number corresponds to your responses.\n"
 						+ "You lose your bet of %d dollars.\n"
-						+ "Btw, my answer is %04d\n", bet, myAnswer));
+						+ "Btw, my answer is %04d.\n", bet, myAnswer));
 		pcs.firePropertyChange(Properties.button, "", "restart");
 	}
 	
@@ -140,6 +140,8 @@ public class Model extends game.Model {
 	void submit(String msg) {
 		switch(turn) {
 		case PLAYER:
+			if(msg.length() != 4)
+				throw new RuntimeException("Wrong format.");
 			Integer guess = Integer.parseInt(msg);
 			if(guess.equals(myAnswer)) {
 				playerWin();

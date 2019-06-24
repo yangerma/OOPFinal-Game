@@ -136,7 +136,7 @@ public class View extends game.View {
         playingPanel.add(submitButton);
         infoArea.setEditable(false);
         infoArea.setLineWrap(true);
-        infoArea.setPreferredSize(new Dimension(300, 50));
+        infoArea.setPreferredSize(new Dimension(300, 80));
 		communicate.add(infoArea, config);
 		communicate.add(playingPanel, config);
 		restartButton.addActionListener(new restartHandler());

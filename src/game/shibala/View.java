@@ -77,6 +77,7 @@ public class View extends game.View{
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
+				rollDice.setEnabled(false);
 				model.rollDice();
 			} catch (RuntimeException e) {
 				showMessage(e.getMessage());
@@ -141,6 +142,7 @@ public class View extends game.View{
 		else if(changed == "dieOne") dicePanel.setDieOne((int) evt.getNewValue());
 		else if(changed == "dieTwo") dicePanel.setDieTwo((int) evt.getNewValue());
 		else if(changed == "dieThree") dicePanel.setDieThree((int) evt.getNewValue());
+		else if(changed == "button") rollDice.setEnabled((boolean) evt.getNewValue());
 		else if((Boolean) evt.getNewValue() == true){
 			messages.append("Your turn.\n");
 			rollDice.setEnabled(true);

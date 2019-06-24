@@ -77,6 +77,7 @@ public class View extends game.View{
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
+				rollSlots.setEnabled(false);
 				model.rollSlot();
 			} catch (RuntimeException e) {
 				showMessage(e.getMessage());
